@@ -379,20 +379,21 @@
     .send-btn:disabled { opacity: .4; pointer-events: none; }
     .send-btn svg { width: 15px; height: 15px; fill: white; }
 
-    /* footer links bottom-right */
-    .footer-links {
-      position: fixed; bottom: 14px; right: 18px;
-      display: flex; align-items: center; gap: 14px;
-      z-index: 100;
+    /* sidebar footer links */
+    .sb-footer {
+      margin-top: auto;
+      padding: 16px 12px 12px;
+      border-top: 1px solid var(--border);
+      display: flex; flex-direction: column; gap: 6px;
     }
     .footer-link {
-      display: flex; align-items: center; gap: 6px;
+      display: flex; align-items: center; gap: 8px;
       color: rgba(255,255,255,0.35); font-size: 11px; font-weight: 500;
-      text-decoration: none; transition: color .18s;
+      text-decoration: none; padding: 6px 8px; border-radius: 8px;
+      transition: all .18s;
     }
-    .footer-link:hover { color: rgba(255,255,255,0.75); }
+    .footer-link:hover { color: rgba(255,255,255,0.8); background: rgba(255,255,255,0.06); }
     .footer-link svg { width: 14px; height: 14px; fill: currentColor; flex-shrink: 0; }
-    .footer-sep { width: 1px; height: 12px; background: rgba(255,255,255,0.15); }
 
     /* early access + back buttons in hero */
     .hero-actions {
@@ -462,6 +463,16 @@
       <div class="sb-item" onclick="fillSend('I need an IP67 rated circular connector, 8-pin, panel mount')">⭕ Circular / Mil-Spec</div>
       <div class="sb-item" onclick="showToast('FPC / FFC catalog — expanding in Phase 2')">📄 FPC / FFC</div>
       <div class="sb-item" onclick="showToast('Power connector catalog — expanding in Phase 2')">⚡ Power</div>
+      <div class="sb-footer">
+        <a class="footer-link" href="https://www.3dagility.com" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
+          3dagility.com
+        </a>
+        <a class="footer-link" href="https://www.youtube.com/@3DAgility_AM/videos" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24"><path d="M23.5 6.19a3.02 3.02 0 0 0-2.12-2.14C19.54 3.5 12 3.5 12 3.5s-7.54 0-9.38.55A3.02 3.02 0 0 0 .5 6.19C0 8.04 0 12 0 12s0 3.96.5 5.81a3.02 3.02 0 0 0 2.12 2.14C4.46 20.5 12 20.5 12 20.5s7.54 0 9.38-.55a3.02 3.02 0 0 0 2.12-2.14C24 15.96 24 12 24 12s0-3.96-.5-5.81zM9.75 15.52V8.48L15.5 12l-5.75 3.52z"/></svg>
+          YouTube
+        </a>
+      </div>
     </aside>
 
     <!-- Chat column -->
@@ -847,18 +858,5 @@ function showToast(msg) {
   t._hide = setTimeout(() => { t.style.opacity = '0'; }, 2800);
 }
 </script>
-<!-- Footer links bottom-right -->
-<div class="footer-links">
-  <a class="footer-link" href="https://www.3dagility.com" target="_blank" rel="noopener">
-    <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
-    3dagility.com
-  </a>
-  <div class="footer-sep"></div>
-  <a class="footer-link" href="https://www.youtube.com/@3DAgility_AM/videos" target="_blank" rel="noopener">
-    <svg viewBox="0 0 24 24"><path d="M23.5 6.19a3.02 3.02 0 0 0-2.12-2.14C19.54 3.5 12 3.5 12 3.5s-7.54 0-9.38.55A3.02 3.02 0 0 0 .5 6.19C0 8.04 0 12 0 12s0 3.96.5 5.81a3.02 3.02 0 0 0 2.12 2.14C4.46 20.5 12 20.5 12 20.5s7.54 0 9.38-.55a3.02 3.02 0 0 0 2.12-2.14C24 15.96 24 12 24 12s0-3.96-.5-5.81zM9.75 15.52V8.48L15.5 12l-5.75 3.52z"/></svg>
-    YouTube
-  </a>
-</div>
-
 </body>
 </html>
