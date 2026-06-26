@@ -732,7 +732,7 @@ function setTyping(v) {
 }
 
 // Stream text character by character for realistic feel
-async function streamText(el, text, msPerChar = 18) {
+async function streamText(el, text, msPerChar = 6) {
   for (let i = 0; i <= text.length; i++) {
     el.innerHTML = renderMarkdown(text.slice(0, i));
     scrollBottom();
@@ -767,7 +767,7 @@ async function sendMessage() {
   const resp = findResponse(txt);
 
   // Stream the text
-  await streamText(bubble, resp.text, 24);
+  await streamText(bubble, resp.text, 8);
 
   // Add part cards
   if (resp.parts && resp.parts.length) {
