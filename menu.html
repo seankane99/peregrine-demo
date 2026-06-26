@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Peregrine AI — Demo Suite</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #09090e; color: #fff;
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: 40px 24px;
+  }
+  body::before {
+    content: '';
+    position: fixed; inset: 0; z-index: 0;
+    background: radial-gradient(ellipse 70% 50% at 50% 0%, rgba(77,101,255,0.18) 0%, transparent 65%);
+    pointer-events: none;
+  }
+  .wrap { position: relative; z-index: 1; width: 100%; max-width: 680px; }
+  .header { text-align: center; margin-bottom: 48px; }
+  .logo { height: 28px; filter: brightness(0) invert(1); opacity: .85; margin-bottom: 20px; }
+  .title { font-size: 36px; font-weight: 900; color: #fff; letter-spacing: -.02em; margin-bottom: 8px; }
+  .sub { font-size: 15px; color: rgba(255,255,255,0.55); }
+  .grid { display: flex; flex-direction: column; gap: 14px; }
+  .card {
+    display: flex; align-items: center; gap: 20px;
+    background: #141420; border: 1px solid rgba(77,101,255,0.25);
+    border-radius: 16px; padding: 20px 24px;
+    text-decoration: none; color: inherit;
+    transition: all .2s;
+  }
+  .card:hover {
+    background: rgba(77,101,255,0.1);
+    border-color: rgba(77,101,255,0.5);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 32px rgba(77,101,255,0.2);
+  }
+  .card-icon {
+    font-size: 28px; width: 56px; height: 56px; flex-shrink: 0;
+    background: rgba(77,101,255,0.15); border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    border: 1px solid rgba(77,101,255,0.3);
+  }
+  .card-body { flex: 1; }
+  .card-title { font-size: 16px; font-weight: 700; margin-bottom: 4px; }
+  .card-desc { font-size: 13px; color: rgba(255,255,255,0.5); }
+  .card-arrow { font-size: 20px; color: rgba(77,101,255,0.7); flex-shrink: 0; }
+  .card.primary { border-color: rgba(77,101,255,0.5); background: rgba(77,101,255,0.1); }
+  .card.primary .card-icon { background: rgba(77,101,255,0.25); }
+  .footer { text-align: center; margin-top: 40px; font-size: 11px; color: rgba(255,255,255,0.25); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="header">
+    <img class="logo" src="https://cdn.prod.website-files.com/676448782dfe133eee2ff360/677e9438cc938f95276ac65e_3D%20A%20LOGO%20SVG.svg" alt="3DAgility"/>
+    <div class="title">Peregrine AI</div>
+    <div class="sub">Demo Suite — 3DAgility Leadership Presentation</div>
+  </div>
+  <div class="grid">
+    <a class="card primary" href="splash.html">
+      <div class="card-icon">🚀</div>
+      <div class="card-body">
+        <div class="card-title">Start Here — Launch Screen</div>
+        <div class="card-desc">The opening splash. Start your presentation here.</div>
+      </div>
+      <div class="card-arrow">→</div>
+    </a>
+    <a class="card" href="index.html">
+      <div class="card-icon">⚡</div>
+      <div class="card-body">
+        <div class="card-title">Live Demo — AI Chat</div>
+        <div class="card-desc">Interactive Peregrine AI connector sourcing demo.</div>
+      </div>
+      <div class="card-arrow">→</div>
+    </a>
+    <a class="card" href="architecture.html">
+      <div class="card-icon">🏗️</div>
+      <div class="card-body">
+        <div class="card-title">Architecture Diagram</div>
+        <div class="card-desc">Current state (Winjit POC) vs future state (MAAX architecture).</div>
+      </div>
+      <div class="card-arrow">→</div>
+    </a>
+    <a class="card" href="brief.html">
+      <div class="card-icon">📄</div>
+      <div class="card-body">
+        <div class="card-title">Executive Brief</div>
+        <div class="card-desc">The business case — market, vision, roadmap, the ask.</div>
+      </div>
+      <div class="card-arrow">→</div>
+    </a>
+  </div>
+  <div class="footer">Confidential · 3DAgility Internal · Built by MAAX · June 2026</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,1201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Peregrine AI — Architecture Evolution | 3DAgility</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #09090e;
+    --surface: #0f0f1a;
+    --surface2: #141428;
+    --border-dim: rgba(255,255,255,0.06);
+    --border-subtle: rgba(255,255,255,0.12);
+
+    /* Legacy / Amber palette */
+    --amber: #f59e0b;
+    --amber-dim: #78350f;
+    --amber-glow: rgba(245,158,11,0.15);
+    --amber-text: #fbbf24;
+    --legacy-node: #1a150a;
+    --legacy-border: rgba(245,158,11,0.35);
+    --legacy-header: rgba(245,158,11,0.08);
+
+    /* MAAX / Blue-Purple palette */
+    --blue: #3b82f6;
+    --purple: #8b5cf6;
+    --cyan: #06b6d4;
+    --blue-glow: rgba(59,130,246,0.2);
+    --purple-glow: rgba(139,92,246,0.2);
+    --maax-node: #0a0a1f;
+    --maax-border: rgba(99,102,241,0.45);
+    --maax-header: rgba(99,102,241,0.1);
+
+    /* Text */
+    --text-primary: #f1f5f9;
+    --text-secondary: #94a3b8;
+    --text-muted: #475569;
+  }
+
+  html, body {
+    width: 100%; height: 100%;
+    background: var(--bg);
+    font-family: 'Inter', system-ui, sans-serif;
+    color: var(--text-primary);
+    overflow-x: hidden;
+  }
+
+  /* ─── HEADER ─── */
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 40px 16px;
+    border-bottom: 1px solid var(--border-dim);
+    background: linear-gradient(180deg, rgba(99,102,241,0.06) 0%, transparent 100%);
+    position: relative;
+  }
+  .header::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 50%; transform: translateX(-50%);
+    width: 60%; height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(99,102,241,0.5), transparent);
+  }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .brand-logo {
+    height: 36px;
+    filter: brightness(0) invert(1);
+  }
+  .brand-sep {
+    width: 1px; height: 28px;
+    background: var(--border-subtle);
+  }
+  .brand-name {
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+  }
+  .header-title {
+    text-align: center;
+    flex: 1;
+  }
+  .header-title h1 {
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    background: linear-gradient(135deg, #e2e8f0 0%, #a5b4fc 50%, #818cf8 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .header-title p {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 3px;
+    letter-spacing: 0.04em;
+  }
+  .header-badge {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
+  }
+  .badge {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 3px 10px;
+    border-radius: 20px;
+    border: 1px solid;
+  }
+  .badge-conf {
+    color: #f87171;
+    border-color: rgba(248,113,113,0.3);
+    background: rgba(248,113,113,0.05);
+  }
+  .badge-date {
+    color: var(--text-muted);
+    border-color: var(--border-dim);
+    background: transparent;
+  }
+
+  /* ─── MAIN LAYOUT ─── */
+  .main {
+    display: grid;
+    grid-template-columns: 1fr 80px 1fr;
+    gap: 0;
+    padding: 28px 32px 0;
+    min-height: calc(100vh - 160px);
+  }
+
+  /* ─── PANEL ─── */
+  .panel {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1px solid;
+    position: relative;
+  }
+  .panel-legacy {
+    border-color: var(--legacy-border);
+    background: var(--legacy-node);
+    box-shadow: 0 0 60px rgba(245,158,11,0.05), inset 0 1px 0 rgba(245,158,11,0.1);
+  }
+  .panel-maax {
+    border-color: var(--maax-border);
+    background: var(--maax-node);
+    box-shadow: 0 0 80px rgba(99,102,241,0.12), 0 0 160px rgba(99,102,241,0.05), inset 0 1px 0 rgba(139,92,246,0.2);
+  }
+
+  .panel-header {
+    padding: 18px 24px 14px;
+    border-bottom: 1px solid;
+    position: relative;
+  }
+  .panel-legacy .panel-header {
+    background: var(--legacy-header);
+    border-color: var(--legacy-border);
+  }
+  .panel-maax .panel-header {
+    background: var(--maax-header);
+    border-color: var(--maax-border);
+  }
+
+  .panel-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .panel-legacy .panel-label { color: var(--amber); }
+  .panel-maax .panel-label { color: #818cf8; }
+
+  .panel-title {
+    font-size: 18px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+  }
+  .panel-legacy .panel-title { color: #fde68a; }
+  .panel-maax .panel-title {
+    background: linear-gradient(135deg, #a5b4fc, #c4b5fd, #67e8f9);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .panel-subtitle {
+    font-size: 12px;
+    margin-top: 4px;
+  }
+  .panel-legacy .panel-subtitle { color: rgba(245,158,11,0.6); }
+  .panel-maax .panel-subtitle { color: rgba(139,92,246,0.7); }
+
+  .panel-body {
+    flex: 1;
+    padding: 20px 20px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  /* ─── MIDDLE DIVIDER ─── */
+  .divider {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 20px 0;
+    position: relative;
+  }
+  .divider-line {
+    flex: 1;
+    width: 1px;
+    background: linear-gradient(180deg, transparent, rgba(99,102,241,0.4), transparent);
+  }
+  .divider-arrow {
+    width: 48px; height: 48px;
+    border-radius: 50%;
+    border: 1px solid rgba(99,102,241,0.4);
+    background: linear-gradient(135deg, rgba(59,130,246,0.15), rgba(139,92,246,0.15));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    animation: pulseArrow 2.5s ease-in-out infinite;
+    box-shadow: 0 0 20px rgba(99,102,241,0.3);
+  }
+  .divider-text {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+  }
+
+  /* ─── TIER LABELS ─── */
+  .tier-label {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: 4px;
+    display: inline-block;
+    margin-bottom: 8px;
+    align-self: flex-start;
+  }
+  .tier-legacy { color: rgba(245,158,11,0.6); background: rgba(245,158,11,0.07); border: 1px solid rgba(245,158,11,0.15); }
+  .tier-maax { color: rgba(139,92,246,0.8); background: rgba(139,92,246,0.07); border: 1px solid rgba(139,92,246,0.2); }
+
+  /* ─── NODES ─── */
+  .node {
+    border-radius: 10px;
+    border: 1px solid;
+    padding: 12px 16px;
+    margin-bottom: 0;
+    position: relative;
+    transition: all 0.3s ease;
+    cursor: default;
+  }
+  .node:hover {
+    transform: translateY(-1px);
+  }
+
+  /* Legacy nodes */
+  .node-legacy {
+    background: linear-gradient(135deg, rgba(30,20,5,0.8), rgba(20,15,5,0.9));
+    border-color: rgba(245,158,11,0.25);
+  }
+  .node-legacy:hover {
+    border-color: rgba(245,158,11,0.5);
+    box-shadow: 0 4px 20px rgba(245,158,11,0.1);
+  }
+
+  /* MAAX nodes */
+  .node-maax {
+    background: linear-gradient(135deg, rgba(10,10,40,0.9), rgba(15,10,35,0.95));
+    border-color: rgba(99,102,241,0.3);
+  }
+  .node-maax:hover {
+    border-color: rgba(99,102,241,0.6);
+    box-shadow: 0 4px 24px rgba(99,102,241,0.15);
+  }
+
+  /* STAR NODE — MAAX Orchestrator */
+  .node-star {
+    background: linear-gradient(135deg, rgba(15,10,50,0.95), rgba(20,10,60,0.98));
+    border-color: rgba(139,92,246,0.6);
+    box-shadow: 0 0 30px rgba(99,102,241,0.25), 0 0 60px rgba(139,92,246,0.1), inset 0 1px 0 rgba(139,92,246,0.3);
+    animation: starPulse 3s ease-in-out infinite;
+  }
+  .node-star:hover {
+    box-shadow: 0 0 40px rgba(99,102,241,0.4), 0 0 80px rgba(139,92,246,0.15);
+  }
+
+  .node-icon {
+    font-size: 18px;
+    line-height: 1;
+    display: inline-block;
+    margin-bottom: 5px;
+  }
+  .node-name {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    display: block;
+    margin-bottom: 2px;
+  }
+  .node-legacy .node-name { color: #fde68a; }
+  .node-maax .node-name, .node-star .node-name {
+    background: linear-gradient(135deg, #c7d2fe, #a5b4fc);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .node-star .node-name {
+    background: linear-gradient(135deg, #e0e7ff, #c4b5fd, #818cf8);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-size: 15px;
+  }
+  .node-sub {
+    font-size: 10px;
+    color: var(--text-muted);
+    display: block;
+  }
+
+  .node-warning {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 9.5px;
+    font-weight: 500;
+    color: #f87171;
+    background: rgba(248,113,113,0.08);
+    border: 1px solid rgba(248,113,113,0.2);
+    border-radius: 4px;
+    padding: 2px 7px;
+    margin-top: 5px;
+    margin-right: 4px;
+    display: inline-flex;
+  }
+
+  /* ─── ARROWS ─── */
+  .flow-arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 28px;
+    position: relative;
+  }
+  .flow-arrow-line {
+    position: absolute;
+    width: 1px;
+    height: 100%;
+    left: 50%;
+    top: 0;
+    transform: translateX(-50%);
+  }
+  .flow-arrow-line-legacy {
+    background: linear-gradient(180deg, rgba(245,158,11,0.5), rgba(245,158,11,0.2));
+  }
+  .flow-arrow-line-maax {
+    background: linear-gradient(180deg, rgba(99,102,241,0.6), rgba(99,102,241,0.2));
+    animation: flowPulse 2s ease-in-out infinite;
+  }
+  .flow-arrow-head {
+    width: 0; height: 0;
+    position: relative;
+    z-index: 1;
+  }
+  .flow-arrow-head-legacy {
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 7px solid rgba(245,158,11,0.6);
+  }
+  .flow-arrow-head-maax {
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 7px solid rgba(99,102,241,0.8);
+  }
+  .flow-label {
+    position: absolute;
+    right: calc(50% + 10px);
+    font-size: 9px;
+    color: var(--text-muted);
+    white-space: nowrap;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+  }
+
+  /* ─── AGENT GRID ─── */
+  .agent-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 0;
+  }
+  .node-agent {
+    background: linear-gradient(135deg, rgba(8,8,30,0.9), rgba(12,8,35,0.95));
+    border-color: rgba(99,102,241,0.2);
+    padding: 10px 12px;
+  }
+  .node-agent:hover {
+    border-color: rgba(99,102,241,0.5);
+    box-shadow: 0 0 20px rgba(99,102,241,0.12);
+  }
+  .node-agent .node-name { font-size: 11px; }
+  .node-agent .node-sub { font-size: 9px; }
+  .agent-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 5px;
+    animation: agentPulse 2s ease-in-out infinite;
+  }
+  .dot-blue { background: var(--blue); box-shadow: 0 0 6px var(--blue); }
+  .dot-purple { background: var(--purple); box-shadow: 0 0 6px var(--purple); }
+  .dot-cyan { background: var(--cyan); box-shadow: 0 0 6px var(--cyan); }
+  .dot-indigo { background: #6366f1; box-shadow: 0 0 6px #6366f1; }
+
+  /* ─── DATA LAYER ─── */
+  .data-layer {
+    display: flex;
+    gap: 6px;
+    margin-top: 0;
+    flex-wrap: wrap;
+  }
+  .data-node {
+    flex: 1;
+    min-width: 0;
+    border-radius: 8px;
+    border: 1px solid;
+    padding: 8px 10px;
+    text-align: center;
+  }
+  .data-legacy {
+    background: rgba(20,12,3,0.8);
+    border-color: rgba(245,158,11,0.2);
+  }
+  .data-maax {
+    background: rgba(5,5,20,0.8);
+    border-color: rgba(99,102,241,0.2);
+    position: relative;
+    overflow: hidden;
+  }
+  .data-maax::before {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%;
+    width: 100%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(99,102,241,0.08), transparent);
+    animation: shimmer 3s ease-in-out infinite;
+  }
+  .data-icon { font-size: 16px; display: block; margin-bottom: 3px; }
+  .data-name {
+    font-size: 9.5px;
+    font-weight: 600;
+    display: block;
+    letter-spacing: 0.02em;
+  }
+  .data-legacy .data-name { color: rgba(253,230,138,0.8); }
+  .data-maax .data-name { color: rgba(165,180,252,0.9); }
+  .data-sub { font-size: 8.5px; color: var(--text-muted); }
+
+  /* ─── SECTION SPACERS ─── */
+  .section-spacer {
+    height: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+  .section-spacer-inner {
+    width: 60%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.04), transparent);
+  }
+
+  /* ─── ROADMAP STRIP ─── */
+  .roadmap {
+    margin: 20px 32px 24px;
+    border-radius: 14px;
+    border: 1px solid var(--border-subtle);
+    background: linear-gradient(135deg, rgba(15,15,30,0.8), rgba(10,10,25,0.9));
+    padding: 18px 28px;
+    position: relative;
+    overflow: hidden;
+  }
+  .roadmap::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(99,102,241,0.5), rgba(139,92,246,0.5), transparent);
+  }
+  .roadmap-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 14px;
+  }
+  .roadmap-phases {
+    display: grid;
+    grid-template-columns: 1fr 40px 1fr 40px 1fr;
+    align-items: start;
+    gap: 0;
+  }
+  .phase {
+    background: linear-gradient(135deg, rgba(15,15,35,0.9), rgba(10,10,30,0.95));
+    border-radius: 10px;
+    border: 1px solid rgba(99,102,241,0.25);
+    padding: 14px 16px;
+    position: relative;
+    transition: all 0.3s ease;
+  }
+  .phase:hover {
+    border-color: rgba(99,102,241,0.5);
+    box-shadow: 0 0 20px rgba(99,102,241,0.1);
+  }
+  .phase-1 { border-color: rgba(16,185,129,0.35); }
+  .phase-1:hover { border-color: rgba(16,185,129,0.6); box-shadow: 0 0 20px rgba(16,185,129,0.1); }
+  .phase-2 { border-color: rgba(99,102,241,0.35); }
+  .phase-3 { border-color: rgba(139,92,246,0.35); }
+
+  .phase-num {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .phase-1 .phase-num { color: #10b981; }
+  .phase-2 .phase-num { color: #818cf8; }
+  .phase-3 .phase-num { color: #c4b5fd; }
+
+  .phase-title {
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    letter-spacing: -0.01em;
+  }
+  .phase-1 .phase-title { color: #6ee7b7; }
+  .phase-2 .phase-title { color: #a5b4fc; }
+  .phase-3 .phase-title { color: #ddd6fe; }
+
+  .phase-items {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .phase-items li {
+    font-size: 10.5px;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+    line-height: 1.4;
+  }
+  .phase-items li::before {
+    content: '→';
+    font-size: 9px;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .phase-1 .phase-items li::before { color: #10b981; }
+  .phase-2 .phase-items li::before { color: #818cf8; }
+  .phase-3 .phase-items li::before { color: #a78bfa; }
+
+  .phase-arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-top: 24px;
+  }
+  .phase-arrow span {
+    font-size: 20px;
+    color: var(--text-muted);
+    animation: pulseArrow 2s ease-in-out infinite;
+  }
+
+  .phase-status {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 2px 7px;
+    border-radius: 10px;
+  }
+  .status-active {
+    color: #10b981;
+    background: rgba(16,185,129,0.1);
+    border: 1px solid rgba(16,185,129,0.3);
+  }
+  .status-next {
+    color: #818cf8;
+    background: rgba(129,140,248,0.1);
+    border: 1px solid rgba(129,140,248,0.3);
+  }
+  .status-future {
+    color: var(--text-muted);
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border-dim);
+  }
+
+  /* ─── FOOTER ─── */
+  .footer {
+    text-align: center;
+    padding: 10px 32px 16px;
+    font-size: 10px;
+    color: var(--text-muted);
+    letter-spacing: 0.05em;
+    border-top: 1px solid var(--border-dim);
+  }
+
+  /* ─── SVG CONNECTION CANVAS ─── */
+  .svg-overlay {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    overflow: visible;
+  }
+
+  /* ─── ANIMATIONS ─── */
+  @keyframes starPulse {
+    0%, 100% {
+      box-shadow: 0 0 30px rgba(99,102,241,0.25), 0 0 60px rgba(139,92,246,0.1), inset 0 1px 0 rgba(139,92,246,0.3);
+      border-color: rgba(139,92,246,0.6);
+    }
+    50% {
+      box-shadow: 0 0 50px rgba(99,102,241,0.45), 0 0 100px rgba(139,92,246,0.2), inset 0 1px 0 rgba(139,92,246,0.5);
+      border-color: rgba(139,92,246,0.9);
+    }
+  }
+
+  @keyframes flowPulse {
+    0%, 100% { opacity: 0.6; }
+    50% { opacity: 1; }
+  }
+
+  @keyframes pulseArrow {
+    0%, 100% { transform: scale(1); opacity: 0.7; }
+    50% { transform: scale(1.1); opacity: 1; }
+  }
+
+  @keyframes agentPulse {
+    0%, 100% { opacity: 0.7; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.3); }
+  }
+
+  @keyframes shimmer {
+    0% { left: -100%; }
+    100% { left: 200%; }
+  }
+
+  @keyframes dashFlow {
+    0% { stroke-dashoffset: 20; }
+    100% { stroke-dashoffset: 0; }
+  }
+
+  /* ─── UTILITY ─── */
+  .flex-row { display: flex; gap: 8px; align-items: stretch; }
+  .flex-col { display: flex; flex-direction: column; gap: 8px; }
+  .mt-8 { margin-top: 8px; }
+  .mt-12 { margin-top: 12px; }
+  .mt-6 { margin-top: 6px; }
+
+  .tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 2px 7px;
+    border-radius: 4px;
+  }
+  .tag-owned {
+    color: #34d399;
+    background: rgba(52,211,153,0.08);
+    border: 1px solid rgba(52,211,153,0.2);
+  }
+  .tag-winjit {
+    color: #f87171;
+    background: rgba(248,113,113,0.08);
+    border: 1px solid rgba(248,113,113,0.2);
+  }
+
+  .section-title {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+    padding-left: 2px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .section-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border-dim);
+  }
+
+  /* ─── MAAX GLOW RING ─── */
+  .glow-ring {
+    position: absolute;
+    top: -2px; left: -2px; right: -2px; bottom: -2px;
+    border-radius: 12px;
+    border: 1px solid rgba(139,92,246,0.3);
+    pointer-events: none;
+    animation: ringPulse 3s ease-in-out infinite;
+  }
+  @keyframes ringPulse {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 0.8; }
+  }
+
+  /* Connection dots */
+  .conn-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    border: 2px solid;
+    position: absolute;
+    right: -4px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 5;
+    animation: agentPulse 2s ease-in-out infinite;
+  }
+  .conn-dot-amber { background: rgba(245,158,11,0.3); border-color: var(--amber); }
+  .conn-dot-blue { background: rgba(99,102,241,0.3); border-color: #6366f1; }
+
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════ HEADER ═══════════════════════════════════════ -->
+<header class="header">
+  <div class="brand">
+    <img class="brand-logo" src="https://cdn.prod.website-files.com/676448782dfe133eee2ff360/677e9438cc938f95276ac65e_3D%20A%20LOGO%20SVG.svg" alt="3DAgility" onerror="this.style.display='none'; this.nextSibling.textContent='3DA'">
+    <div class="brand-sep"></div>
+    <span class="brand-name">3DAgility Intelligence Platform</span>
+  </div>
+  <div class="header-title">
+    <h1>Peregrine AI — Architecture Evolution</h1>
+    <p>Technical Overview &nbsp;·&nbsp; Prepared by MAAX &nbsp;·&nbsp; June 2026</p>
+  </div>
+  <div class="header-badge">
+    <span class="badge badge-conf">⚑ Confidential</span>
+    <span class="badge badge-date">June 2026</span>
+  </div>
+</header>
+
+<!-- ═══════════════════════════════════════ MAIN ═══════════════════════════════════════ -->
+<main class="main">
+
+  <!-- ─────────── LEFT: LEGACY ─────────── -->
+  <div class="panel panel-legacy">
+    <div class="panel-header">
+      <div class="panel-label">⚠ Current State</div>
+      <div class="panel-title">POC — Winjit Build</div>
+      <div class="panel-subtitle">Rapid prototype · Not production-ready · 3/10 readiness</div>
+    </div>
+    <div class="panel-body">
+
+      <!-- CLIENT -->
+      <div class="section-title">Client Layer</div>
+      <div class="node node-legacy" style="position:relative;">
+        <span class="node-icon">🖥️</span>
+        <span class="node-name">Angular Frontend (x4)</span>
+        <span class="node-sub">User Portal + Admin Portal — Peregrine &amp; Wiremasters</span>
+        <div class="mt-6">
+          <span class="node-warning">⚠ No auth guard</span>
+          <span class="node-warning">⚠ Hardcoded env URLs</span>
+        </div>
+        <div class="conn-dot conn-dot-amber"></div>
+      </div>
+
+      <div class="flow-arrow">
+        <div class="flow-arrow-line flow-arrow-line-legacy"></div>
+        <div class="flow-arrow-head flow-arrow-head-legacy"></div>
+        <span class="flow-label">HTTP REST + Socket.IO</span>
+      </div>
+
+      <!-- BACKEND -->
+      <div class="section-title">Backend Layer</div>
+      <div class="node node-legacy" style="position:relative;">
+        <span class="node-icon">⚙️</span>
+        <span class="node-name">Node.js / Express Backend</span>
+        <span class="node-sub">JWT auth · Socket.IO relay · REST API · Redis caching</span>
+        <div class="mt-6">
+          <span class="node-warning">⚠ Credentials in .env (committed)</span>
+          <span class="node-warning">⚠ Single tenant</span>
+        </div>
+        <div class="conn-dot conn-dot-amber"></div>
+      </div>
+
+      <div class="flow-arrow">
+        <div class="flow-arrow-line flow-arrow-line-legacy"></div>
+        <div class="flow-arrow-head flow-arrow-head-legacy"></div>
+        <span class="flow-label">Socket.IO / HTTP axios</span>
+      </div>
+
+      <!-- LLM -->
+      <div class="section-title">AI / LLM Layer</div>
+      <div class="node node-legacy" style="position:relative;">
+        <span class="node-icon">🐍</span>
+        <span class="node-name">Python LLM Services (FastAPI + Socket.IO)</span>
+        <span class="node-sub">chat_module_version_upgrade.py · Monolithic pipeline</span>
+        <div class="mt-6">
+          <span class="node-warning">⚠ 5–7 LLM calls/query</span>
+          <span class="node-warning">⚠ No orchestration</span>
+          <span class="node-warning">⚠ Prompt hardcoded in code</span>
+        </div>
+      </div>
+
+      <!-- LLM Pipeline detail -->
+      <div class="mt-8" style="background:rgba(30,18,5,0.6); border:1px solid rgba(245,158,11,0.15); border-radius:8px; padding:10px 14px;">
+        <div style="font-size:9px; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:rgba(245,158,11,0.5); margin-bottom:8px;">10-Step Monolithic Pipeline (per query)</div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:3px 12px;">
+          <div style="font-size:9.5px; color:#78716c;">① Load chat history</div>
+          <div style="font-size:9.5px; color:#78716c;">⑥ Query Pinecone</div>
+          <div style="font-size:9.5px; color:#78716c;">② Detect query intent</div>
+          <div style="font-size:9.5px; color:#78716c;">⑦ Feedback favorites</div>
+          <div style="font-size:9.5px; color:#f87171;">③ GPT: rephrase ← LLM call</div>
+          <div style="font-size:9.5px; color:#78716c;">⑧ Detect query type</div>
+          <div style="font-size:9.5px; color:#f87171;">④ GPT: filter dict ← LLM call</div>
+          <div style="font-size:9.5px; color:#f87171;">⑨ GPT: final response ← LLM call</div>
+          <div style="font-size:9.5px; color:#78716c;">⑤ TF-IDF fuzzy match</div>
+          <div style="font-size:9.5px; color:#f87171;">⑩ GPT: follow-ups ← LLM call</div>
+        </div>
+      </div>
+
+      <div class="flow-arrow" style="height:20px;">
+        <div class="flow-arrow-line flow-arrow-line-legacy"></div>
+        <div class="flow-arrow-head flow-arrow-head-legacy"></div>
+      </div>
+
+      <!-- DATA -->
+      <div class="section-title">Data Layer</div>
+      <div class="data-layer">
+        <div class="data-node data-legacy">
+          <span class="data-icon">🌲</span>
+          <span class="data-name">Pinecone</span>
+          <span class="data-sub" style="color:#f87171;">⚠ Winjit's keys</span>
+        </div>
+        <div class="data-node data-legacy">
+          <span class="data-icon">🍃</span>
+          <span class="data-name">Azure Cosmos DB</span>
+          <span class="data-sub" style="color:#92400e;">MongoDB API</span>
+        </div>
+        <div class="data-node data-legacy">
+          <span class="data-icon">🤖</span>
+          <span class="data-name">OpenAI</span>
+          <span class="data-sub" style="color:#f87171;">⚠ Winjit's keys</span>
+        </div>
+        <div class="data-node data-legacy">
+          <span class="data-icon">⚡</span>
+          <span class="data-name">Redis Cloud</span>
+          <span class="data-sub" style="color:#92400e;">Session cache</span>
+        </div>
+      </div>
+
+      <!-- Credential risk callout -->
+      <div class="mt-8" style="background:rgba(127,29,29,0.2); border:1px solid rgba(248,113,113,0.25); border-radius:8px; padding:10px 14px; display:flex; align-items:flex-start; gap:10px;">
+        <span style="font-size:18px; flex-shrink:0;">🔓</span>
+        <div>
+          <div style="font-size:10px; font-weight:700; color:#f87171; margin-bottom:3px;">Critical Security Risk</div>
+          <div style="font-size:9.5px; color:#fca5a5; line-height:1.5;">API keys committed to source · Running on Winjit's Pinecone + OpenAI accounts · No secrets management · No multi-tenancy isolation</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ─────────── DIVIDER ─────────── -->
+  <div class="divider">
+    <div class="divider-line"></div>
+    <div class="divider-arrow">→</div>
+    <div class="divider-text">Rebuild</div>
+    <div class="divider-line"></div>
+  </div>
+
+  <!-- ─────────── RIGHT: MAAX ─────────── -->
+  <div class="panel panel-maax">
+    <div class="panel-header">
+      <div class="panel-label">✦ Future State</div>
+      <div class="panel-title">Production — MAAX Architecture</div>
+      <div class="panel-subtitle">3DAgility-owned · Enterprise security · Observable from day one</div>
+    </div>
+    <div class="panel-body">
+
+      <!-- CLIENT -->
+      <div class="section-title">Client Layer</div>
+      <div class="node node-maax" style="position:relative;">
+        <span class="node-icon">⚡</span>
+        <span class="node-name">Next.js 14 Frontend (App Router + SSE)</span>
+        <span class="node-sub">Streaming responses · Persona-driven UX (Engineer / Procurement / Executive)</span>
+        <div class="mt-6">
+          <span class="tag tag-owned">✓ 3DA-Owned</span>
+          <span class="tag tag-owned">✓ Streaming SSE</span>
+        </div>
+        <div class="conn-dot conn-dot-blue"></div>
+      </div>
+
+      <div class="flow-arrow">
+        <div class="flow-arrow-line flow-arrow-line-maax"></div>
+        <div class="flow-arrow-head flow-arrow-head-maax"></div>
+        <span class="flow-label">HTTPS / SSE</span>
+      </div>
+
+      <!-- API GATEWAY -->
+      <div class="section-title">API Gateway</div>
+      <div class="node node-maax" style="position:relative;">
+        <span class="node-icon">🛡️</span>
+        <span class="node-name">API Gateway — Auth + Rate Limiting</span>
+        <span class="node-sub">Entra ID / OAuth2 · CORS · Rate limiting · Multi-tenant routing</span>
+        <div class="mt-6">
+          <span class="tag tag-owned">✓ Azure Key Vault</span>
+          <span class="tag tag-owned">✓ Zero hardcoded creds</span>
+        </div>
+        <div class="conn-dot conn-dot-blue"></div>
+      </div>
+
+      <div class="flow-arrow">
+        <div class="flow-arrow-line flow-arrow-line-maax"></div>
+        <div class="flow-arrow-head flow-arrow-head-maax"></div>
+      </div>
+
+      <!-- MAAX ORCHESTRATOR — STAR -->
+      <div class="section-title">Orchestration Layer</div>
+      <div class="node node-star" style="position:relative;">
+        <div class="glow-ring"></div>
+        <span class="node-icon">✦</span>
+        <span class="node-name">MAAX — LangGraph State Machine</span>
+        <span class="node-sub">Intent-first orchestration · Streaming · Fully observable · 3DAgility proprietary</span>
+        <div class="mt-6">
+          <span class="tag tag-owned">✓ LangGraph</span>
+          <span class="tag tag-owned">✓ Async streaming</span>
+          <span class="tag tag-owned">✓ State machine</span>
+        </div>
+      </div>
+
+      <!-- Agents -->
+      <div class="mt-8">
+        <div class="section-title">Agent Layer (MAAX routes to)</div>
+        <div class="agent-grid">
+          <div class="node node-maax node-agent">
+            <span class="agent-dot dot-blue"></span>
+            <span class="node-name">Intent Agent</span>
+            <span class="node-sub">Classify: part search / availability / comparison / clarification</span>
+          </div>
+          <div class="node node-maax node-agent">
+            <span class="agent-dot dot-purple"></span>
+            <span class="node-name">Translation Agent</span>
+            <span class="node-sub">App intent → connector spec mapping (3DA moat)</span>
+          </div>
+          <div class="node node-maax node-agent">
+            <span class="agent-dot dot-cyan"></span>
+            <span class="node-name">Retrieval Agent</span>
+            <span class="node-sub">Pinecone semantic + metadata filter + live API</span>
+          </div>
+          <div class="node node-maax node-agent">
+            <span class="agent-dot dot-indigo"></span>
+            <span class="node-name">Availability Agent</span>
+            <span class="node-sub">Live stock / pricing via distributor APIs</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="flow-arrow" style="height:20px;">
+        <div class="flow-arrow-line flow-arrow-line-maax"></div>
+        <div class="flow-arrow-head flow-arrow-head-maax"></div>
+      </div>
+
+      <!-- DATA -->
+      <div class="section-title">Data &amp; Observability Layer</div>
+      <div class="data-layer">
+        <div class="data-node data-maax">
+          <span class="data-icon">🌲</span>
+          <span class="data-name">Pinecone</span>
+          <span class="data-sub" style="color:#34d399;">3DA-owned</span>
+        </div>
+        <div class="data-node data-maax">
+          <span class="data-icon">☁️</span>
+          <span class="data-name">Azure Cosmos DB</span>
+          <span class="data-sub">3DA tenant</span>
+        </div>
+        <div class="data-node data-maax">
+          <span class="data-icon">🔐</span>
+          <span class="data-name">Azure Key Vault</span>
+          <span class="data-sub">Zero secrets in code</span>
+        </div>
+        <div class="data-node data-maax" style="border-color: rgba(234,179,8,0.3);">
+          <span class="data-icon">📊</span>
+          <span class="data-name" style="color:rgba(253,224,71,0.9);">LangFuse</span>
+          <span class="data-sub">Every LLM call traced</span>
+        </div>
+      </div>
+
+      <!-- Improvement callout -->
+      <div class="mt-8" style="background:rgba(5,46,22,0.4); border:1px solid rgba(52,211,153,0.25); border-radius:8px; padding:10px 14px; display:flex; align-items:flex-start; gap:10px;">
+        <span style="font-size:18px; flex-shrink:0;">✦</span>
+        <div>
+          <div style="font-size:10px; font-weight:700; color:#34d399; margin-bottom:3px;">Enterprise-Grade from Day One</div>
+          <div style="font-size:9.5px; color:#86efac; line-height:1.5;">3DA-owned credentials · Secrets in Key Vault · Multi-tenant by design · Every LLM call observable via LangFuse · Intent-first architecture that scales</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</main>
+
+<!-- ═══════════════════════════════════════ ROADMAP ═══════════════════════════════════════ -->
+<section class="roadmap">
+  <div class="roadmap-label">Delivery Roadmap</div>
+  <div class="roadmap-phases">
+
+    <div class="phase phase-1">
+      <span class="phase-status status-active">● Active</span>
+      <div class="phase-num">Phase 1</div>
+      <div class="phase-title">Foundation &amp; Credential Transfer</div>
+      <ul class="phase-items">
+        <li>Transfer Pinecone + OpenAI to 3DA accounts</li>
+        <li>Provision Azure Key Vault — zero hardcoded secrets</li>
+        <li>Audit all 8 repos, document findings</li>
+        <li>Architecture design (this document)</li>
+        <li>MAAX orchestration layer scaffolding (LangGraph)</li>
+      </ul>
+    </div>
+
+    <div class="phase-arrow"><span>→</span></div>
+
+    <div class="phase phase-2">
+      <span class="phase-status status-next">Next</span>
+      <div class="phase-num">Phase 2</div>
+      <div class="phase-title">MAAX Build — Core Agents</div>
+      <ul class="phase-items">
+        <li>Intent Agent — query classification pipeline</li>
+        <li>Translation Agent — spec mapping (3DA moat)</li>
+        <li>Retrieval Agent — Pinecone + live API integration</li>
+        <li>Next.js frontend with SSE streaming</li>
+        <li>LangFuse observability wired end-to-end</li>
+      </ul>
+    </div>
+
+    <div class="phase-arrow"><span>→</span></div>
+
+    <div class="phase phase-3">
+      <span class="phase-status status-future">Planned</span>
+      <div class="phase-num">Phase 3</div>
+      <div class="phase-title">Production Launch &amp; Expansion</div>
+      <ul class="phase-items">
+        <li>Availability Agent — live distributor APIs</li>
+        <li>Multi-tenant isolation + Entra ID SSO</li>
+        <li>Wiremasters + Peregrine unified under MAAX</li>
+        <li>Expand to all electronic parts (connector → catalog)</li>
+        <li>Enterprise SLA, monitoring, auto-scaling</li>
+      </ul>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════ FOOTER ═══════════════════════════════════════ -->
+<footer class="footer">
+  Peregrine AI by 3DAgility &nbsp;·&nbsp; Architecture prepared by MAAX &nbsp;·&nbsp; Internal / Confidential &nbsp;·&nbsp; June 2026
+</footer>
+
+<!-- ─── Animated SVG particle layer for MAAX panel ─── -->
+<svg style="position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;opacity:0.35;" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="g1" cx="75%" cy="40%" r="30%">
+      <stop offset="0%" stop-color="#6366f1" stop-opacity="0.12"/>
+      <stop offset="100%" stop-color="#6366f1" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="g2" cx="75%" cy="70%" r="25%">
+      <stop offset="0%" stop-color="#8b5cf6" stop-opacity="0.08"/>
+      <stop offset="100%" stop-color="#8b5cf6" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="g3" cx="25%" cy="50%" r="20%">
+      <stop offset="0%" stop-color="#f59e0b" stop-opacity="0.05"/>
+      <stop offset="100%" stop-color="#f59e0b" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="100%" height="100%" fill="url(#g1)"/>
+  <rect width="100%" height="100%" fill="url(#g2)"/>
+  <rect width="100%" height="100%" fill="url(#g3)"/>
+</svg>
+
+<script>
+// Animated particle dots for the MAAX side
+(function() {
+  const canvas = document.createElement('canvas');
+  canvas.style.cssText = 'position:fixed;top:0;right:0;width:50%;height:100%;pointer-events:none;z-index:0;opacity:0.4;';
+  document.body.appendChild(canvas);
+
+  const ctx = canvas.getContext('2d');
+  let W, H;
+
+  function resize() {
+    W = canvas.offsetWidth;
+    H = canvas.offsetHeight;
+    canvas.width = W;
+    canvas.height = H;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  const particles = [];
+  const COLORS = ['rgba(99,102,241,', 'rgba(139,92,246,', 'rgba(6,182,212,'];
+
+  for (let i = 0; i < 40; i++) {
+    particles.push({
+      x: Math.random() * 100,
+      y: Math.random() * 100,
+      r: Math.random() * 1.5 + 0.5,
+      vx: (Math.random() - 0.5) * 0.08,
+      vy: (Math.random() - 0.5) * 0.08,
+      color: COLORS[Math.floor(Math.random() * COLORS.length)],
+      opacity: Math.random() * 0.6 + 0.2,
+      phase: Math.random() * Math.PI * 2
+    });
+  }
+
+  let t = 0;
+  function draw() {
+    if (!W || !H) { requestAnimationFrame(draw); return; }
+    ctx.clearRect(0, 0, W, H);
+    t += 0.01;
+
+    particles.forEach(p => {
+      p.x += p.vx;
+      p.y += p.vy;
+      if (p.x < 0) p.x = 100;
+      if (p.x > 100) p.x = 0;
+      if (p.y < 0) p.y = 100;
+      if (p.y > 100) p.y = 0;
+
+      const pulse = Math.sin(t + p.phase) * 0.3 + 0.7;
+      ctx.beginPath();
+      ctx.arc(p.x / 100 * W, p.y / 100 * H, p.r * pulse, 0, Math.PI * 2);
+      ctx.fillStyle = p.color + (p.opacity * pulse) + ')';
+      ctx.fill();
+    });
+
+    // Draw some connection lines between nearby particles
+    for (let i = 0; i < particles.length; i++) {
+      for (let j = i + 1; j < particles.length; j++) {
+        const dx = (particles[i].x - particles[j].x) / 100 * W;
+        const dy = (particles[i].y - particles[j].y) / 100 * H;
+        const dist = Math.sqrt(dx*dx + dy*dy);
+        if (dist < 80) {
+          ctx.beginPath();
+          ctx.moveTo(particles[i].x / 100 * W, particles[i].y / 100 * H);
+          ctx.lineTo(particles[j].x / 100 * W, particles[j].y / 100 * H);
+          ctx.strokeStyle = 'rgba(99,102,241,' + (0.08 * (1 - dist/80)) + ')';
+          ctx.lineWidth = 0.5;
+          ctx.stroke();
+        }
+      }
+    }
+
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+</script>
+
+</body>
+</html>
