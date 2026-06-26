@@ -671,6 +671,31 @@ Key specs: 4.2mm pitch, rated 13A/circuit, 600V, UL 94V-0 nylon housing. Excelle
       { part_number: '87833-1420', manufacturer: 'Molex', availability: 'In Stock', description: 'Milli-Grid board-to-board header, 14-pos, 2.0mm pitch, straight, SMT', specs: '14-pos | 2.0mm | SMT | 1A | -40°C to +105°C', price: '$0.95' },
     ],
     followup: 'What is your required board spacing (stack height), and do you need high-speed signal integrity (>1 Gbps)?'
+  },
+  {
+    match: ['drone','uav','quadcopter','consumer drone','fpv','multirotor','flight controller','esc','electronic speed'],
+    text: `Great application — consumer drones have some very specific connector requirements. You\'re balancing **weight, vibration resistance, current capacity, and ease of field replacement** all at once.
+
+**Here\'s what a typical consumer drone BOM looks like from a connector standpoint:**
+
+**Power train (battery → ESC → motors)**
+This is your highest-current path. XT30 or XT60 are the industry standard for LiPo battery connections — XT60 for anything above 30A continuous. For motor phase wires to ESC, 3.5mm or 4mm bullet connectors are standard.
+
+**Flight controller & peripheral stack**
+JST-GH 1.25mm is the go-to for FC interconnects (GPS, RX, telemetry, VTX). It\'s the connector Pixhawk and ArduPilot standardized on. Lightweight, reliable, positive locking.
+
+**FPV video & camera**
+JST-PH 2.0mm for camera power leads. Hirose DF13 if you need a more robust locking solution on the camera gimbal.
+
+**Payload / expansion**
+For modular payloads, Molex Micro-Fit 3.0 gives you a solid latching connector that handles vibration well and supports up to 5A per contact.`,
+    parts: [
+      { part_number: 'XT60H-M', manufacturer: 'Amass', availability: 'In Stock', description: 'XT60 male bullet connector, high-current LiPo battery plug, nylon housing, gold plated contacts', specs: '2-pos | 60A continuous | 3.5mm bullet | Gold | 200°C rated', price: '$1.20' },
+      { part_number: 'SM04B-GHS-TB', manufacturer: 'JST', availability: 'In Stock', description: 'JST GH 1.25mm 4-pin SMT header, standard for Pixhawk/ArduPilot FC peripherals (GPS, UART, I2C)', specs: '4-pos | 1.25mm pitch | SMT | 50V | 1A per contact', price: '$0.38' },
+      { part_number: 'B4B-PH-K-S', manufacturer: 'JST', availability: 'In Stock', description: 'JST PH 2.0mm 4-pin through-hole header, camera and FPV power leads, lightweight', specs: '4-pos | 2.0mm pitch | TH | 100V | 2A per contact', price: '$0.22' },
+      { part_number: '43045-0412', manufacturer: 'Molex', availability: 'In Stock', description: 'Micro-Fit 3.0 4-pos receptacle housing, payload/expansion connector, positive latch, vibration resistant', specs: '4-pos | 3.0mm pitch | 5A | 600V | -40°C to +105°C', price: '$0.85' },
+    ],
+    followup: 'What frame size are you targeting (65mm whoops up to 7\" long-range)? And are you running a custom FC or a commercial stack like Pixhawk / Betaflight? That\'ll determine whether you need JST-GH or a different series for your peripheral harness.'
   }
 ];
 
