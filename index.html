@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -693,7 +693,34 @@ For modular payloads, Molex Micro-Fit 3.0 gives you a solid latching connector t
     ],
     followup: 'What frame size are you targeting (65mm whoops up to 7\" long-range)? And are you running a custom FC or a commercial stack like Pixhawk / Betaflight? That\'ll determine whether you need JST-GH or a different series for your peripheral harness.'
   }
+  },
+  {
+    match: ['warehouse','robot','industrial robot','agv','amr','autonomous mobile','warehouse robot','picking robot','logistics','motor drive','servo','can bus','e-stop','safety interlock'],
+    text: `Excellent — industrial warehouse robots have one of the most demanding connector BOMs in the business. You're dealing with **high-cycle mating, vibration, EMI from motor drives, safety-rated interlocks, and CAN/EtherCAT comms** all on the same platform.
+
+**Motor drive & power (48V–72V DC bus)**
+Anderson SB connectors for main battery/bus — the warehouse standard used in virtually every AGV and forklift. Molex Mini-Fit Jr for 24V control power to subsystems.
+
+**CAN bus / EtherCAT comms backbone**
+Deutsch DT Series for node connections — IP68, vibration-proof, field-serviceable without tools. M12 D-coded for EtherCAT daisy-chain between modules.
+
+**Safety interlocks & E-stop circuit**
+Phoenix Contact M8/M12 safety connectors for E-stop loops — IEC 61984 compliant, fail-safe (open on disconnect). Never put standard connectors on a safety circuit.
+
+**Encoder & sensor feedback**
+Hirose HR10 circular push-pull for encoder connections — excellent EMI shielding, tool-free field swap. M8 A-coded 4-pin for proximity sensors and limit switches throughout the chassis.`,
+    parts: [
+      { part_number: 'SB175A-BK', manufacturer: 'Anderson Power', availability: 'In Stock', description: 'Anderson SB175 battery connector, 175A, 48V-80V DC bus, genderless — AGV/forklift industry standard', specs: '2-pos | 175A | 600V | IP54 | Genderless | -40C to +85C', price: '$8.40' },
+      { part_number: 'DT06-4S-CE13', manufacturer: 'TE / Deutsch', availability: 'In Stock', description: 'DEUTSCH DT 4-pin receptacle, IP68 sealed, CAN bus node connector, vibration-rated for mobile robotics', specs: '4-pos | IP68 | 13A | Sealed | MIL-compatible | Wedgelock', price: '$11.20' },
+      { part_number: 'YCX4P-D-2-R', manufacturer: 'Amphenol', availability: 'In Stock', description: 'M12 D-coded 4-pin male, EtherCAT / Profinet fieldbus, IP67, 360-degree EMI shielded', specs: '4-pos | M12 D-coded | IP67 | EtherCAT | 4A | Shielded', price: '$9.75' },
+      { part_number: 'HR10A-7R-4S', manufacturer: 'Hirose', availability: 'In Stock', description: 'HR10 circular push-pull 4-pin receptacle, encoder/servo feedback, EMI shielded, tool-free field swap', specs: '4-pos | Push-pull | IP50 | 1A | Shielded | -25C to +85C', price: '$6.30' },
+      { part_number: '1827014', manufacturer: 'Phoenix Contact', availability: 'In Stock', description: 'M8 A-coded 4-pin female, PNP/NPN proximity sensor and limit switch wiring, IP67', specs: '4-pos | M8 A-coded | IP67 | 4A | 250V | Screw terminal', price: '$4.15' },
+    ],
+    followup: 'What\'s your drive voltage (24V, 48V, 72V?) and are you running CAN bus, EtherCAT, or PROFINET for the comms backbone? That\'ll let me narrow the exact M12 spec and whether you need 4-pin or 5-pin for your network topology.'
+  }
 ];
+
+;
 
 const DEFAULT_RESPONSE = {
   text: `I understand you're looking for connector information. Let me analyze your requirements.
